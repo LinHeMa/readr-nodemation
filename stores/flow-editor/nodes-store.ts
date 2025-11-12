@@ -1,4 +1,11 @@
-import type { Edge, Node } from "@xyflow/react";
+import {
+  applyEdgeChanges,
+  applyNodeChanges,
+  type Edge,
+  type EdgeChange,
+  type Node,
+  type NodeChange,
+} from "@xyflow/react";
 import { create } from "zustand";
 
 const defaultNode = {
@@ -36,6 +43,8 @@ export type NodesStates = {
 };
 export type NodeActions = {
   addNode: () => void;
+  onNodesChange: (changes: NodeChange[]) => void;
+  onEdgeChange: (changes: EdgeChange[]) => void;
 };
 
 export type NodesStore = NodesStates & NodeActions;
@@ -44,4 +53,14 @@ export const useNodesStore = create<NodesStore>()((set) => ({
   nodes: [defaultNode, defaultNode2],
   edges: [defaultEdge],
   addNode: () => set((state) => ({ nodes: [...state.nodes, defaultNode] })),
+  onNodesChange: (changes: NodeChange[]) => {
+    set((state) => ({
+      nodes: applyNodeChanges(changes, state.nodes),
+    }));
+  },
+  onEdgeChange: (changes: EdgeChange[]) => {
+    set((state) => ({
+      edges: applyEdgeChanges(changes, state.edges),
+    }));
+  },
 }));
